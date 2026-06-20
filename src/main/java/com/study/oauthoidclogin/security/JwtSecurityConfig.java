@@ -24,6 +24,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.study.oauthoidclogin.oauth.CookieAuthorizationRequestRepository;
+import com.study.oauthoidclogin.oauth.CustomOidcUserService;
+import com.study.oauthoidclogin.oauth.OAuth2LoginSuccessHandler;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -146,7 +150,11 @@ public class JwtSecurityConfig {
             JwtAuthenticationFilter jwtAuthenticationFilter,
             RestAuthenticationEntryPoint authenticationEntryPoint,
             RestAccessDeniedHandler accessDeniedHandler,
-            JwtSecurityProperties props) throws Exception {
+            JwtSecurityProperties props,
+            OAuth2AuthorizationRequestResolver pkceResolver,
+            CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository,
+            CustomOidcUserService customOidcUserService,
+            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
 
         JwtSecurityProperties.Authorization rules = props.getAuthorization();
 
@@ -158,6 +166,12 @@ public class JwtSecurityConfig {
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .logout(logout -> logout.disable())
+                .oauth2Login(o -> o
+                        .authorizationEndpoint(a -> a
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository)
+                                .authorizationRequestResolver(pkceResolver))
+                        .userInfoEndpoint(u -> u.oidcUserService(customOidcUserService))
+                        .successHandler(oAuth2LoginSuccessHandler))
                 .authorizeHttpRequests(auth -> {
                     // 1) 역할별(가장 구체적) — hasRole 은 ROLE_ 자동 접두
                     rules.getRoles().forEach((path, role) -> auth.requestMatchers(path).hasRole(role));
