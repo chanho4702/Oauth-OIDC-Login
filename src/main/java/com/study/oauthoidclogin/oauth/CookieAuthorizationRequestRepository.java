@@ -66,7 +66,11 @@ public class CookieAuthorizationRequestRepository
     }
 
     private OAuth2AuthorizationRequest deserialize(String value) {
-        byte[] bytes = Base64.getUrlDecoder().decode(value);
-        return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(bytes);
+        try {
+            byte[] bytes = Base64.getUrlDecoder().decode(value);
+            return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(bytes);
+        } catch (Exception e) {
+            return null; // 변조/만료/버전불일치 쿠키는 없는 것으로 취급 → 재인증
+        }
     }
 }

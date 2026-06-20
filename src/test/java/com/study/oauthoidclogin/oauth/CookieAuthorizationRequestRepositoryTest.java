@@ -55,6 +55,7 @@ class CookieAuthorizationRequestRepositoryTest {
 
         OAuth2AuthorizationRequest removed = repo.removeAuthorizationRequest(req, res);
         assertThat(removed).isNotNull();
+        assertThat(removed.getState()).isEqualTo("state-xyz");
         // Spring 7 MockHttpServletResponse.getCookie() returns the first match; use getCookies()
         // stream to find the last-added cookie (the deletion cookie with maxAge=0).
         Optional<Cookie> cleared = Arrays.stream(res.getCookies())
