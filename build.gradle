@@ -36,6 +36,7 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.boot:spring-boot-data-jpa-test'  // @DataJpaTest (Spring Boot 4.x)
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testRuntimeOnly 'com.h2database:h2'   // @DataJpaTest 용(테스트 전용)
 }
