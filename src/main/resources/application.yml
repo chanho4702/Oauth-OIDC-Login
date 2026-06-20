@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/oauthlogin
+    username: root
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid, profile, email
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+
+app:
+  oauth:
+    frontend-redirect-uri: http://localhost:5173/oauth/callback
+
+jwt-security:
+  secret: ${JWT_SECRET:dev-secret-please-change-this-to-32+bytes-long!!}
+  issuer: oauth-oidc-login
+  store:
+    type: memory
+  access-token:
+    validity-seconds: 900
+  refresh-token:
+    enabled: true
+    validity-seconds: 1209600
+    rotation: true
+    reuse-detection: true
+    cookie:
+      name: REFRESH_TOKEN
+      http-only: true
+      secure: false
+      same-site: Lax
+      path: /api/auth
+  blacklist:
+    enabled: true
+  authorization:
+    public-paths:
+      - "/error"
+      - "/api/auth/**"
+      - "/oauth2/**"
+      - "/login/oauth2/**"
+    authenticated:
+      - "/api/**"
+    roles:
+      "[/api/admin/**]": ADMIN
+  cors:
+    enabled: true
+    allowed-origins:
+      - "http://localhost:5173"
+  csrf:
+    enabled: false
+
+logging:
+  level:
+    com.study.oauthoidclogin: DEBUG
