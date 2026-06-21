@@ -32,8 +32,9 @@ $env:GOOGLE_CLIENT_ID="...";  $env:GOOGLE_CLIENT_SECRET="..."
    Google 이 `code_challenge == SHA256(code_verifier)` 검증(PKCE).
 5. Google → Access Token + **ID Token(JWT)** 반환. (OIDC 라 UserInfo 도 조회)
 6. CustomOidcUserService: ID Token/UserInfo 표준 클레임 → DB find-or-create.
-7. OAuth2LoginSuccessHandler: 우리 서비스 JWT 발급(AT + RT 쿠키) → `/oauth/callback` 리다이렉트.
-8. 프론트가 `POST /api/auth/refresh`(RT 쿠키) → AT 획득 → 이후 `Authorization: Bearer <AT>`.
+7. OAuth2LoginSuccessHandler: 우리 서비스 JWT 발급(AT + RT 쿠키) → 프론트 `/app` 리다이렉트.
+8. 프론트 AuthProvider 가 마운트 시 `POST /api/auth/refresh`(RT 쿠키) → AT 획득 → 이후
+   `Authorization: Bearer <AT>`. (별도 콜백 페이지 없이 silent refresh 로 세션 복원)
 
 front-channel(브라우저 경유, code 만) vs back-channel(서버↔서버, 토큰 교환)의 분리가 핵심.
 

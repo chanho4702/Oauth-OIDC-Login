@@ -35,7 +35,7 @@ class OAuth2LoginSuccessHandlerTest {
                 .thenReturn(ResponseCookie.from("REFRESH_TOKEN", "rt-id-1").path("/api/auth").build());
 
         OAuth2LoginSuccessHandler handler = new OAuth2LoginSuccessHandler(
-                tokenService, cookieFactory, "http://localhost:5173/oauth/callback");
+                tokenService, cookieFactory, "http://localhost:5173/app");
 
         OidcIdToken idToken = new OidcIdToken("tok", Instant.now(), Instant.now().plusSeconds(60),
                 Map.of("sub", "sub-1", "email", "g@x.com", "iss", "https://accounts.google.com"));
@@ -51,6 +51,6 @@ class OAuth2LoginSuccessHandlerTest {
 
         verify(tokenService).issueFor(eq("g@x.com"), anyCollection());
         assertThat(res.getHeader("Set-Cookie")).contains("REFRESH_TOKEN=rt-id-1");
-        assertThat(res.getRedirectedUrl()).isEqualTo("http://localhost:5173/oauth/callback");
+        assertThat(res.getRedirectedUrl()).isEqualTo("http://localhost:5173/app");
     }
 }

@@ -26,7 +26,9 @@ spring:
 
 app:
   oauth:
-    frontend-redirect-uri: http://localhost:5173/oauth/callback
+    # OIDC 성공 후 곧장 프론트 대시보드로 보낸다. 프론트 AuthProvider 가 마운트 시
+    # silent refresh(RT 쿠키→AT)로 세션을 복원하므로 별도 콜백 페이지가 필요 없다.
+    frontend-redirect-uri: http://localhost:5173/app
 
 jwt-security:
   secret: ${JWT_SECRET:dev-secret-please-change-this-to-32+bytes-long!!}
@@ -44,7 +46,7 @@ jwt-security:
       name: REFRESH_TOKEN
       http-only: true
       secure: false
-      # OAuth 리다이렉트 흐름 필수: Google 콜백 후 브라우저가 프론트(/oauth/callback)에서
+      # OAuth 리다이렉트 흐름 필수: Google 콜백 후 브라우저가 프론트(/app)에서
       # 첫 POST /api/auth/refresh 를 보낼 때 RT 쿠키가 전송되려면 Lax 여야 한다.
       # (모듈 기본값은 Strict — 그대로면 Google 로그인 직후 refresh 에서 쿠키 누락으로 실패)
       same-site: Lax
